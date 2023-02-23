@@ -98,18 +98,22 @@ public class SeleniumCombinedTest {
     @Test(priority = 5)
     public void testWebTable() {
         // Find the table element
-        WebElement table = driver.findElement(By.id("product"));
+        WebElement table = driver.findElement(By.xpath("//*[contains(@class, 'tableFixHead')]"));
 // Get the rows in the table
         List<WebElement> rows = table.findElements(By.tagName("tr"));
 // Find the column index for Name, Location, and Amount
-        int nameIndex = -1, locationIndex = -1, amountIndex = -1;
+        int nameIndex = -1, locationIndex = -1, amountIndex = -1, positionIndex = -1;
         WebElement headerRow = rows.get(0);
         List<WebElement> headers = headerRow.findElements(By.tagName("th"));
-        for (int i = 1; i < headers.size(); i++) {
+        for (int i = 0; i < headers.size(); i++) {
             String headerText = headers.get(i).getText().trim();
+            System.out.println(headerText+i);
             if (headerText.equals("Name")) {
+                System.out.println(i);
                 nameIndex = i;
-            } else if (headerText.equals("Location")) {
+            } else if (headerText.equals("Position")) {
+                positionIndex = i;
+            }else if (headerText.equals("City")) {
                 locationIndex = i;
             } else if (headerText.equals("Amount")) {
                 amountIndex = i;
@@ -118,9 +122,10 @@ public class SeleniumCombinedTest {
 // Find the row with Joe Postman from Chennai
         boolean found = false;
         int totalAmount = 0;
-        for (int i = 0; i < rows.size(); i++) {
+        for (int i = 1; i < rows.size(); i++) {
             List<WebElement> cells = rows.get(i).findElements(By.tagName("td"));
-            if (cells.get(nameIndex).getText().trim().equals("Joe Postman") && cells.get(locationIndex).getText().trim().equals("Chennai")) {
+            System.out.print(cells);
+            if (cells.get(nameIndex).getText().trim().equals("Joe") && cells.get(positionIndex).getText().trim().equals("Postman") &&cells.get(locationIndex).getText().trim().equals("Chennai")) {
                 found = true;
                 String amountText = cells.get(amountIndex).getText().trim();
                 int amount = Integer.parseInt(amountText);
@@ -133,7 +138,7 @@ public class SeleniumCombinedTest {
             }
         }
 // Validate that the row for Joe Postman from Chennai has an amount of 46
-        if (found && totalAmount == 296) {
+        if (found && totalAmount == 46) {
             System.out.println("Total amount collected is " + totalAmount);
         } else {
             System.out.println("Error: Unable to find Joe Postman from Chennai or total amount is incorrect");
@@ -143,7 +148,7 @@ public class SeleniumCombinedTest {
     @Test(priority = 6)
     public void testIFrame() {
         // Switch to the iframe
-        driver.switchTo().frame("iframeResult");
+        driver.switchTo().frame("iframe-name");
 // Find and interact with an element within the iframe
         WebElement iframeParagraph = driver.findElement(By.tagName("p"));
         System.out.println(iframeParagraph.getText());
